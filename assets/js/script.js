@@ -10,9 +10,16 @@ const taskFormHandler = function (event){
   let taskNameInput = document.querySelector("input[name='task-name']").value
   let taskTypeInput = document.querySelector("select[name='task-type']").value
   
+  if (!taskNameInput || !taskTypeInput) {
+    console.log("Please don't leave any fields blank")
+    return false
+  }
+  
   let taskDataObj = { name: taskNameInput, type: taskTypeInput }
   
   createTaskEl(taskDataObj)
+
+  formEl.reset()
 }
 
 const createTaskEl = function (taskDataObj) {
