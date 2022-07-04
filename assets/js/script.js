@@ -4,6 +4,8 @@ const buttonEl = document.querySelector('#save-task')
 
 const tasksToDoEl = document.querySelector('#tasks-to-do')
 
+const pageContentEl = document.querySelector("#page-content");
+
 let taskIdCounter = 0
 
 const taskFormHandler = function (event){  
@@ -41,7 +43,7 @@ const createTaskEl = function (taskDataObj) {
   taskIdCounter++;
 }
 
-var createTaskActions = function(taskId) {
+const createTaskActions = function(taskId) {
   const actionContainerEl = document.createElement("div");
   actionContainerEl.className = "task-actions";
 
@@ -83,4 +85,22 @@ var createTaskActions = function(taskId) {
   return actionContainerEl
 };
 
+const taskButtonHandler = function(event) {
+  console.log(event.target);
+
+  if (event.target.matches(".delete-btn")) {
+    console.log("you clicked a delete button!");
+    const taskId = event.target.getAttribute("data-task-id");
+    deleteTask(taskId)
+  }
+  
+};
+
+const deleteTask = function(taskId) {
+  const taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+  taskSelected.remove();
+};
+
 formEl.addEventListener('submit', taskFormHandler)
+
+pageContentEl.addEventListener('click', taskButtonHandler)
