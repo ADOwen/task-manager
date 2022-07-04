@@ -4,6 +4,7 @@ const buttonEl = document.querySelector('#save-task')
 
 const tasksToDoEl = document.querySelector('#tasks-to-do')
 
+let taskIdCounter = 0
 
 const taskFormHandler = function (event){  
   event.preventDefault()
@@ -17,21 +18,69 @@ const taskFormHandler = function (event){
   
   let taskDataObj = { name: taskNameInput, type: taskTypeInput }
   
-  createTaskEl(taskDataObj)
+  createTaskEl(taskDataObj);
 
-  formEl.reset()
+  formEl.reset();
 }
 
 const createTaskEl = function (taskDataObj) {
-  const listItemEl = document.createElement("li")
-  listItemEl.className = "task-item";
-  
-  const taskInfoEl = document.createElement("div")
-  taskInfoEl.className = "task-info"
-  taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class='task-type'>" + taskDataObj.type + "</span>";
+  const listItemEl = document.createElement("li");
+  listItemEl.className = "task-item"; 
+  listItemEl.setAttribute("data-task-id", taskIdCounter);
 
+  const taskInfoEl = document.createElement("div");
+  taskInfoEl.className = "task-info";
+  taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class='task-type'>" + taskDataObj.type + "</span>";
   listItemEl.appendChild(taskInfoEl);
-  tasksToDoEl.appendChild(listItemEl)
+
+  const taskActionsEl = createTaskActions(taskIdCounter);
+  listItemEl.appendChild(taskActionsEl);
+
+  tasksToDoEl.appendChild(listItemEl);
+
+  taskIdCounter++;
 }
+
+var createTaskActions = function(taskId) {
+  const actionContainerEl = document.createElement("div");
+  actionContainerEl.className = "task-actions";
+
+  // create edit button
+  const editButtonEl = document.createElement("button");
+  editButtonEl.textContent = "Edit";
+  editButtonEl.className = "btn edit-btn";
+  editButtonEl.setAttribute("data-task-id", taskId);
+
+  actionContainerEl.appendChild(editButtonEl);
+
+  // create delete button
+  const deleteButtonEl = document.createElement("button");
+  deleteButtonEl.textContent = "Delete";
+  deleteButtonEl.className = "btn delete-btn";
+  deleteButtonEl.setAttribute("data-task-id", taskId)
+
+  actionContainerEl.appendChild(deleteButtonEl);
+
+  const statusSelectEl = document.createElement("select");
+  statusSelectEl.className = "select-status";
+  statusSelectEl.setAttribute("name", "status-change");
+  statusSelectEl.setAttribute("data-task-id", taskId);
+
+  actionContainerEl.appendChild(statusSelectEl);
+
+  const statusChoices = ["To Do", "In Progress", "Completed"];
+
+  for (let i = 0; i < statusChoices.length; i++) {
+    // create option element
+    const statusOptionEl = document.createElement("option");
+    statusOptionEl.textContent = statusChoices[i];
+    statusOptionEl.setAttribute("value", statusChoices[i]);
+  
+    // append to select
+    statusSelectEl.appendChild(statusOptionEl);
+  }
+
+  return actionContainerEl
+};
 
 formEl.addEventListener('submit', taskFormHandler)
