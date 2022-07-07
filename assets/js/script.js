@@ -34,6 +34,7 @@ const taskFormHandler = function (event){
     let taskDataObj = { name: taskNameInput, type: taskTypeInput, status: "to do" }
     taskDataObj.id = taskIdCounter
     tasks.push(taskDataObj)
+    saveTasks(taskDataObj)
     createTaskEl(taskDataObj);
   }
 
@@ -101,15 +102,11 @@ const createTaskActions = function(taskId) {
 };
 
 const taskButtonHandler = function(event) {
-  console.log(event.target);
-
   if (event.target.matches(".edit-btn")) {
-    console.log("you clicked an edit button!");
     const taskId = event.target.getAttribute("data-task-id");
     editTask(taskId)
   }
   else if (event.target.matches(".delete-btn")) {
-    console.log("you clicked a delete button!");
     const taskId = event.target.getAttribute("data-task-id");
     deleteTask(taskId)
   }
@@ -130,6 +127,7 @@ const deleteTask = function(taskId) {
   }
 
   tasks = updatedTaskArr;
+  saveTasks();
 };
 
 const editTask = function(taskId) {
@@ -157,7 +155,7 @@ const completeEditTask = function(taskName, taskType, taskId) {
       tasks[i].type = taskType;
     }
   };
-  
+  saveTasks();
   formEl.removeAttribute("data-task-id");
   document.querySelector("#save-task").textContent = "Add Task"
 }
@@ -184,7 +182,12 @@ const taskStatusChangeHandler = function(event) {
       tasks[i].status = statusValue;
     }
   }
+  saveTasks();
 };
+
+const saveTasks = function() {
+  localStorage.setItem("tasks", JSON.stringify(tasks))
+}
 
 formEl.addEventListener('submit', taskFormHandler)
 
