@@ -12,6 +12,8 @@ var tasksCompletedEl = document.querySelector("#tasks-completed");
 
 let taskIdCounter = 0
 
+let tasks = []
+
 const taskFormHandler = function (event){  
   event.preventDefault()
   let taskNameInput = document.querySelector("input[name='task-name']").value
@@ -29,7 +31,9 @@ const taskFormHandler = function (event){
     completeEditTask(taskNameInput, taskTypeInput, taskId)
   }
   else {
-    let taskDataObj = { name: taskNameInput, type: taskTypeInput }
+    let taskDataObj = { name: taskNameInput, type: taskTypeInput, status: "to do" }
+    taskDataObj.id = taskIdCounter
+    tasks.push(taskDataObj)
     createTaskEl(taskDataObj);
   }
 
@@ -115,10 +119,20 @@ const taskButtonHandler = function(event) {
 const deleteTask = function(taskId) {
   const taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
   taskSelected.remove();
+
+  let updatedTaskArr = []
+
+  for (var i = 0; i < tasks.length; i++) {
+    // if tasks[i].id doesn't match the value of taskId, let's keep that task and push it into the new array
+    if (tasks[i].id !== parseInt(taskId)) {
+      updatedTaskArr.push(tasks[i]);
+    }
+  }
+
+  tasks = updatedTaskArr;
 };
 
 const editTask = function(taskId) {
-  console.log(taskId)
   const taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
 
   const taskName = taskSelected.querySelector("h3.task-name").textContent
@@ -133,17 +147,22 @@ const editTask = function(taskId) {
 
 const completeEditTask = function(taskName, taskType, taskId) {
   const taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
-  console.log(taskSelected)
+ 
   taskSelected.querySelector("h3.task-name").textContent = taskName;
   taskSelected.querySelector("span.task-type").textContent = taskType
+
+  for (let i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].name = taskName;
+      tasks[i].type = taskType;
+    }
+  };
   
   formEl.removeAttribute("data-task-id");
   document.querySelector("#save-task").textContent = "Add Task"
 }
 
 const taskStatusChangeHandler = function(event) {
-  console.log(event.target)
-
   const taskId = event.target.getAttribute("data-task-id");
 
   const statusValue = event.target.value.toLowerCase();
@@ -158,6 +177,12 @@ const taskStatusChangeHandler = function(event) {
   } 
   else if (statusValue === "completed") {
     tasksCompletedEl.appendChild(taskSelected);
+  }
+
+  for (let i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].status = statusValue;
+    }
   }
 };
 
